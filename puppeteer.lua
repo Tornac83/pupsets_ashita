@@ -29,7 +29,7 @@
 ----------------------------------------------------------------------------------------------------
 local puppeteer          = {};   	-- The overall table this library uses.
 puppeteer.queue          = {};   	-- The queue to handle events this library does.
-puppeteer.delay          = 0.5; 	-- The delay to prevent spamming packets.
+puppeteer.delay          = 1.0; 	-- The delay to prevent spamming packets.
 puppeteer.timer          = 0;    	-- The current time used for delaying packets.
 puppeteer.mem            = {};   	-- The table holding memory specific data.
 puppeteer.mem.offset1    = 0;    	-- The value for the automaton data
@@ -197,7 +197,7 @@ end;
 -- func: Puppeteer.validZone
 -- Checking if the puppeteer is in a zone where the puppet can come out.
 ---------------------------------------------------------------
-function puppeteer.validZone()
+function puppeteer.isvalidZone()
 	local zone_id = AshitaCore:GetDataManager():GetParty():GetMemberZone(0);
 	if contains(petlessZones, zone_id) then
 		return false
@@ -528,7 +528,7 @@ function puppeteer.equipSet(set, onComplete)
 		return;
 	end
 	puppeteer.callback = onComplete;
-	puppeteer.timer = os.time() + 1;
+	puppeteer.timer = os.clock() + 1;
 	puppeteer.resetAttachments();
 	puppeteer.setHead(set["head"]);
 	puppeteer.setFrame(set["frame"]);

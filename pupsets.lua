@@ -189,21 +189,21 @@ ashita.register_event('command', function(command, ntype)
 			pet = GetEntity(player.PetTargetIndex);
 		end
 		
-		if (pet ~= nil and pup.validZone() == true and autospawn == true) then
+		local isvalidZone = pup.isvalidZone()
+		
+		if (pet ~= nil and isvalidZone == true and autospawn == true) then
 			if(pup.getAbilityRecast("Deactivate") == 0 and (pet.HealthPercent >= 100 or pup.getAbilityRecast("Activate") == 0)) then
 				AshitaCore:GetChatManager():QueueCommand('/pet "Deactivate" <me>', 0);
 			else
 				msg("You can't modify youre pup set while you have a pet active.");
 				return true;
 			end
-		elseif(pup.validzone() == false)then
-		    msg("Invalid zone for pets, switching attachments.");
 		end
 		
 		if(data["head"] ~= nil and data["frame"] ~= nil and data["attachments"] ~= nil) then
 			pup.equipSet(data, function()
 				msg('Loaded pup set: \31\04' .. name);
-				if (pup.validZone() == true and autospawn == true) then
+				if (isvalidZone == true and autospawn == true) then
 					if(auto_activate == true and pup.getAbilityRecast("Activate") == 0) then
 						AshitaCore:GetChatManager():QueueCommand('/ja "Activate" <me>', 0);
 					elseif(auto_deus == true and pup.getAbilityRecast("Deus Ex Automata") == 0) then
