@@ -27,13 +27,14 @@
 --################################
 --  CONFIGURATION
 --################################
-	local auto_deus = true;
-	local auto_activate = false;
+    local autospawn       = true;
+    local auto_deus       = true;
+    local auto_activate   = true;
 --################################
 
-_addon.author   = 'DivByZero'; -- Retail addition added by Benjaman --
+_addon.author   = 'DivByZero'; -- Retail addition added by Benjaman -- --additional messing around by tornac --
 _addon.name     = 'pupsets';
-_addon.version  = '1.0.1';
+_addon.version  = '1.0.2';
 
 require 'common'
 require 'ffxi.recast'
@@ -105,6 +106,57 @@ ashita.register_event('command', function(command, ntype)
         end
         return true;
     end
+	
+    -- AutoSpawn - Turns on/off autospawning.
+    ----------------------------------------------------------------------------------------------------
+    if (#args >= 3 and args[2] == 'autospawn') then
+		if (args[3] == 'on')then
+			autospawn = true;
+			msg('autospawn turned on, your puppet will now auto spawn/despawn on attachment change.');
+		elseif (args[3] == 'off')then
+            autospawn = false;
+			msg('autospawn turned off, you will need to manually spawn/despawn for attachement changes.');
+        else
+            msg('Invalid command for autospawn please choose on or off.');
+        end
+        return true;
+    end
+
+    -- spawn - Spawns the pet using the best ability available.
+    ----------------------------------------------------------------------------------------------------
+    local player = GetPlayerEntity();
+    local pet = nil;
+	if(player ~= nil and player.PetTargetIndex ~= nil) then
+	    pet = GetEntity(player.PetTargetIndex);
+	end
+	
+	if (#args >= 2 and args[2] == 'spawn') then
+	    if(auto_activate == true and pup.getAbilityRecast("Activate") == 0) then
+	        AshitaCore:GetChatManager():QueueCommand('/ja "Activate" <me>', 0);
+	    elseif(auto_deus == true and pup.getAbilityRecast("Deus Ex Automata") == 0) then
+	        AshitaCore:GetChatManager():QueueCommand('/ja "Deus Ex Automata" <me>', 0);
+	    else
+	        msg("both Activate and Deus Ex Automata are on cooldown please try again later");
+		end
+		return true;
+	end
+	
+    -- despawn - Spawns the pet using the best ability available.
+    ----------------------------------------------------------------------------------------------------
+    local player = GetPlayerEntity();
+	local pet = nil;
+	if(player ~= nil and player.PetTargetIndex ~= nil) then
+	    pet = GetEntity(player.PetTargetIndex);
+    end
+	
+	if (#args >= 2 and args[2] == 'despawn') then
+        if(pup.getAbilityRecast("Deactivate") == 0 and (pet.HealthPercent >= 100 or pup.getAbilityRecast("Activate") == 0)) then
+            AshitaCore:GetChatManager():QueueCommand('/pet "Deactivate" <me>', 0);
+        else
+		    msg("Deactivate not available, please try again later.");
+		end
+		return true;
+	end
 
     -- Load - Loads a saved pup set from disk.
     ----------------------------------------------------------------------------------------------------
@@ -137,22 +189,28 @@ ashita.register_event('command', function(command, ntype)
 			pet = GetEntity(player.PetTargetIndex);
 		end
 		
-		if (pet ~= nil) then
+		if (pet ~= nil and pup.validZone() == true and autospawn == true) then
 			if(pup.getAbilityRecast("Deactivate") == 0 and (pet.HealthPercent >= 100 or pup.getAbilityRecast("Activate") == 0)) then
 				AshitaCore:GetChatManager():QueueCommand('/pet "Deactivate" <me>', 0);
 			else
-				msg("You can't modify youre pup set while you have a pet active");
+				msg("You can't modify youre pup set while you have a pet active.");
 				return true;
 			end
+		elseif(pup.validzone() == false)then
+		    msg("Invalid zone for pets, switching attachments.");
 		end
 		
 		if(data["head"] ~= nil and data["frame"] ~= nil and data["attachments"] ~= nil) then
 			pup.equipSet(data, function()
 				msg('Loaded pup set: \31\04' .. name);
-				if(auto_deus == true and pup.getAbilityRecast("Deus Ex Automata") == 0) then
-					AshitaCore:GetChatManager():QueueCommand('/ja "Deus Ex Automata" <me>', 0);
-				elseif(auto_activate == true and pup.getAbilityRecast("Activate") == 0) then
-					AshitaCore:GetChatManager():QueueCommand('/ja "Activate" <me>', 0);
+				if (pup.validZone() == true and autospawn == true) then
+					if(auto_activate == true and pup.getAbilityRecast("Activate") == 0) then
+						AshitaCore:GetChatManager():QueueCommand('/ja "Activate" <me>', 0);
+					elseif(auto_deus == true and pup.getAbilityRecast("Deus Ex Automata") == 0) then
+						AshitaCore:GetChatManager():QueueCommand('/ja "Deus Ex Automata" <me>', 0);
+					else
+					    msg("both Activate and Deus Ex Automata are on cooldown please try again later");
+					end
 				end
 			end);
 		else
@@ -209,6 +267,9 @@ ashita.register_event('command', function(command, ntype)
     -- Prints the addon help..
     print_help('/pupsets', {
         { '/pupsets list',                  '- Lists all the known sets saved to disk.' },
+        { '/pupsets spawn',                 '- Spawns puppet using best ability available.'},
+        { '/pupsets despawn',               '- Despawns puppet using best ability available.'},
+        { '/pupsets autoSpawn [on/off]',    '- Turns the autoSpawn on and off with the attachment change.'},
         { '/pupsets load [name]',           '- Loads a pup set from the given file name.' },
         { '/pupsets save [name]',           '- Saves the current pup set to the given file name.' },
         { '/pupsets delete [name]',         '- Deletes the given saved pup set.' },
