@@ -1,7 +1,7 @@
 # pupsets for Ashita
 Change pup automaton equipment sets for Ashita  
 Originally designed for use withh DSP servers.  
-Tested on Retail. Use at your own risk.
+Not tested on Retail (revised tornac version). Use at your own risk.
 
 # Commands
 /pupsets or /pupset or /ps  
@@ -10,7 +10,10 @@ Tested on Retail. Use at your own risk.
 load  
 save  
 list  
-delete  
+delete
+autospawn
+spawn
+despawn
 
 # Examples
 /ps save myset  
