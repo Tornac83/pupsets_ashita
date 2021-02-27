@@ -37,7 +37,11 @@ puppeteer.EQUIP_OFFSET 	 = 0x2000  	-- The offsets for equipment id's
 puppeteer.ATTACH_OFFSET  = 0x2100  	-- The offsets for attachment id's
 puppeteer.callback		 = nil
 puppeteer.workload		 = 0;
-puppeteer.is_retail    = true;      -- true if retail server, false if private server.
+puppeteer.is_retail      = true;      -- true if retail server, false if private server.
+
+petlessZones             = {50,235,234,224,284,233,70,257,251,14,242,250,226,245,
+                            237,249,131,53,252,231,236,246,232,240,247,243,223,248,230,
+                            26,71,244,239,238,241,256,257}
 
 
 ----------------------------------------------------------------------------------------------------
@@ -175,6 +179,32 @@ function puppeteer.initialize()
     puppeteer.is_retail = puppeteer.isRetailServer();
 end
 
+---------------------------------------------------------------
+-- func: Contains
+-- sees if any values are in a given table.
+---------------------------------------------------------------
+
+function contains(table, val)
+   for i=1,#table do
+      if table[i] == val then 
+         return true
+      end
+   end
+   return false;
+end;
+
+---------------------------------------------------------------
+-- func: Puppeteer.validZone
+-- Checking if the puppeteer is in a zone where the puppet can come out.
+---------------------------------------------------------------
+function puppeteer.validZone()
+	local zone_id = AshitaCore:GetDataManager():GetParty():GetMemberZone(0);
+	if contains(petlessZones, zone_id) then
+		return false
+	else
+		return true
+	end
+end
 
 ----------------------------------------------------------------------------------------------------
 -- func: getBits
