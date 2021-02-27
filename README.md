@@ -10,10 +10,10 @@ Not tested on Retail (revised tornac version). Use at your own risk.
 load  
 save  
 list  
-delete
-autospawn
-spawn
-despawn
+delete  
+autospawn  
+spawn  
+despawn  
 
 # Examples
 /ps save myset  
