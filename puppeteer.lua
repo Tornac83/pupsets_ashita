@@ -485,8 +485,8 @@ end
 -- desc: Processes the packet queue to be sent.
 ----------------------------------------------------------------------------------------------------
 function puppeteer.processQueue()
-    if  (os.time() >= (puppeteer.timer + puppeteer.delay)) then
-        puppeteer.timer = os.time();
+    if  (os.clock() >= (puppeteer.timer + puppeteer.delay)) then
+        puppeteer.timer = os.clock();
 		
         if (#puppeteer.queue > 0) then
             local data = table.remove(puppeteer.queue, 1);
