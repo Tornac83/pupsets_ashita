@@ -131,9 +131,9 @@ ashita.register_event('command', function(command, ntype)
 	end
 	
 	if (#args >= 2 and args[2] == 'spawn') then
-	    if(auto_activate == true and pup.getAbilityRecast("Activate") == 0) then
+	    if(pup.getAbilityRecast("Activate") == 0) then
 	        AshitaCore:GetChatManager():QueueCommand('/ja "Activate" <me>', 0);
-	    elseif(auto_deus == true and pup.getAbilityRecast("Deus Ex Automata") == 0) then
+	    elseif(pup.getAbilityRecast("Deus Ex Automata") == 0) then
 	        AshitaCore:GetChatManager():QueueCommand('/ja "Deus Ex Automata" <me>', 0);
 	    else
 	        msg("both Activate and Deus Ex Automata are on cooldown please try again later");
